@@ -7,7 +7,7 @@ CREATE TABLE students
 (
   firstName   varchar(64) NOT NULL,
   sirName     varchar(64) NOT NULL,
-  class       varchar(10)  NOT NULL,
+  cls         varchar(10)  NOT NULL,
   dir         varchar(10),
-  PRIMARY KEY (firstName, sirName, class)
+  PRIMARY KEY (firstName, sirName, cls)
 );

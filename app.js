@@ -29,15 +29,18 @@ app.get('/', (req, res) => {
     //         console.log(err);
     //     }
     // });
-
-    database.query("select * from students", (error, results, fields) => {
-        log("------------")
-        log(JSON.stringify(results))
-        log("------------")
-        res.render('home', {name: "Home", students: JSON.stringify(results)});
-    })
-    
+    if (req.query.klasse) database.query("select * from students where cls = ?", [req.query.klasse], (...data) => {renderHome(res, data, req.query.klasse)})
+    else database.query("select * from students", (...data) => {renderHome(res, data, req.query.klasse)})
 });
+
+function renderHome(res, data, cls = "") {
+    if (data[0]) console.log(data[0])
+    else {
+        res.render('home', {name: "Home", students: JSON.stringify(data[1]), cls});
+    }
+    
+    res.end()
+}
 
 
 app.post("/contactForm", function (req, res) {

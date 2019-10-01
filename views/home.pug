@@ -1,6 +1,32 @@
 include start
 
 span(style="display: none;" id="data") #{students}
-div(style="background: red; width: 100px; height: 100px;")
+form(action="/" method="GET")
+  span klasse
+  input(name="klasse" value=`${cls}`)
+
+ul#list
+
+div#new
+  h3 New Student
+  form(action="/" method="POST")
+    span FirstName
+    br
+    input(name="firstName")
+    br
+    br
+    span SirName
+    br
+    input(name="sirName")
+    br
+    br
+    span Class
+    br
+    input(name="cls")
+    br
+    br
+    span Direction
+    br
+    input(name="sirName")
 
 include end
