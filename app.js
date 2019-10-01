@@ -1,4 +1,5 @@
 global.root = process.env.BASEURL || "http://127.0.0.1:8181/";
+global.log = console.log
 
 const express = require("express");
 const app = express();
@@ -10,18 +11,32 @@ app.use(cors());
 
 const mysql = require("mysql");
 
-// let database = mysql.createConnection({
-//     host: process.env.MYSQL_HOST,
-//     user: process.env.MYSQL_USER,
-//     password: process.env.MYSQL_PASSWORD,
-//     database: process.env.MYSQL_DATABASE
-// });
+let database = mysql.createConnection({
+    host: "localhost",
+    user: "medt",
+    password: "123",
+    database: "schuelerverwaltung"
+});
 
 app.set('view engine', 'pug');
 app.use(express.static('resources'));
 
 app.get('/', (req, res) => {
-    res.render('home', {name: "Home"});
+    // database.query("INSERT INTO students VALUES (?,?,?,?)", ["testFirstName", "testLastName", "testClass", "testDir"], function (err) {
+    //     if (!err) {
+    //         log("suc")
+    //     } else {
+    //         console.log(err);
+    //     }
+    // });
+
+    database.query("select * from students", (error, results, fields) => {
+        log("------------")
+        log(JSON.stringify(results))
+        log("------------")
+        res.render('home', {name: "Home", students: JSON.stringify(results)});
+    })
+    
 });
 
 
