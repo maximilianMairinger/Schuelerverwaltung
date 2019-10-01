@@ -1,7 +1,12 @@
 include start
 
 span(style="display: none;" id="data") #{students}
-form(action="/" method="GET")
+if msg 
+  h3 Message:
+  p #{msg}
+
+
+form(action="/" method="GET")#auswahl
   span klasse
   input(name="klasse" value=`${cls}`)
 
@@ -12,21 +17,26 @@ div#new
   form(action="/" method="POST")
     span FirstName
     br
-    input(name="firstName")
+    input(name="firstName" value="")
     br
     br
     span SirName
     br
-    input(name="sirName")
+    input(name="sirName" value="")
     br
     br
     span Class
     br
-    input(name="cls")
+    input(name="cls" value="")
     br
     br
     span Direction
     br
-    input(name="sirName")
+    input(name="dir" value="")
+    br
+    br
+    input(type="submit" value="submit")
+
+    input(name="type" value="new" style="display: none")
 
 include end

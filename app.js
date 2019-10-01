@@ -21,66 +21,36 @@ let database = mysql.createConnection({
 app.set('view engine', 'pug');
 app.use(express.static('resources'));
 
-app.get('/', (req, res) => {
-    // database.query("INSERT INTO students VALUES (?,?,?,?)", ["testFirstName", "testLastName", "testClass", "testDir"], function (err) {
-    //     if (!err) {
-    //         log("suc")
-    //     } else {
-    //         console.log(err);
-    //     }
-    // });
-    if (req.query.klasse) database.query("select * from students where cls = ?", [req.query.klasse], (...data) => {renderHome(res, data, req.query.klasse)})
-    else database.query("select * from students", (...data) => {renderHome(res, data, req.query.klasse)})
-});
+app.get('/', (req, res) => {serve(req, res)});
 
-function renderHome(res, data, cls = "") {
+function serve(req, res, msg) {
+    if (req.query.klasse !== undefined && req.query.klasse !== "") database.query("select * from students where cls = ?", [req.query.klasse], (...data) => {renderHome(res, data, msg, req.query.klasse)})
+    else database.query("select * from students", (...data) => {renderHome(res, data, msg, req.query.klasse)})
+}
+
+function renderHome(res, data, msg, cls = "") {
     if (data[0]) console.log(data[0])
     else {
-        res.render('home', {name: "Home", students: JSON.stringify(data[1]), cls});
+        res.render('home', {name: "Home", students: JSON.stringify(data[1]), cls, msg});
     }
     
     res.end()
 }
 
 
-app.post("/contactForm", function (req, res) {
-    console.log(req.body);
-    if (req.body.name && req.body.email && req.body.type && req.body.text && req.body.from) {
-        console.log("New subscriber");
-        console.log("---------------");
-        database.query("INSERT INTO subscribers VALUES (?,?,?,?,?)", [req.body.name, req.body.email, req.body.type, req.body.text, req.body.from], function (err) {
-            if (!err) {
-                res.write(JSON.stringify({result: true}));
-                res.end();
-                sendMail("Name: "+req.body.name+"\nEmail: "+req.body.email+"\nTyp: "+req.body.type+"\nText: "+req.body.text,"\nVon: "+req.body.from);
-            } else {
-                console.log(err);
-                res.write(JSON.stringify({result: false}));
-                res.end();
-            }
+app.post("/", function (req, res) {
+    let { body } = req
+    if (body.type === "delete") {
+        if (body.dir === undefined) body.dir = null
+        database.query("delete from students where firstName = ? and sirName = ? and cls = ?", [body.firstName, body.sirName, body.cls], function (err) {
+            serve(req, res, err)
         });
-    } else {
-        res.write(JSON.stringify({err: "MISSING_DATA"}));
-        res.end();
     }
-});
-
-app.post("/newsletter", function (req, res) {
-    console.log(req.body);
-    if (req.body.email) {
-        database.query("INSERT INTO newsletter VALUES (?)", [req.body.email], function (err) {
-            if (!err) {
-                res.write(JSON.stringify({result: true}));
-                res.end();
-            } else {
-                console.log(err);
-                res.write(JSON.stringify({result: false}));
-                res.end();
-            }
+    else if (body.type === "new") {
+        if (body.dir === undefined) body.dir = null
+        database.query("INSERT INTO students VALUES (?,?,?,?)", [body.firstName, body.sirName, body.cls, body.dir], function (err) {
+            serve(req, res, err)
         });
-    } else {
-        res.write(JSON.stringify({result: false}));
-        res.end();
     }
 });
 
